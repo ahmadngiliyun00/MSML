@@ -1,0 +1,22 @@
+Workflow CI - Submission Sistem Monitoring & Logging
+
+Repository: MSML [https://github.com/ahmadngiliyun00/MSML]
+CI Tool: GitHub Actions [https://github.com/ahmadngiliyun00/Workflow-CI]
+
+Tujuan:
+- Menjalankan pengecekan otomatis setiap ada push / pull request
+- Memastikan dependency bisa diinstall dan script utama bisa dijalankan
+
+Workflow:
+- Trigger: push dan pull_request ke branch main
+- Jobs:
+  1) Setup Python (versi: 3.x)
+  2) Install dependencies: pip install -r requirements.txt
+  3) Lint/format (opsional): ruff/flake8
+  4) Run basic check:
+     - python -m py_compile  (atau jalankan file tertentu)
+     - (opsional) python -c "import ..."
+
+Bukti:
+- File workflow ada di: .github/workflows/ci.yml
+- Status terakhir: success (sertakan screenshot jika diminta)

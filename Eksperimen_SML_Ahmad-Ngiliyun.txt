@@ -1,0 +1,89 @@
+EKSperimen Sistem Machine Learning - Ahmad Ngiliyun (Mas Ilyun)
+
+1. Informasi Proyek
+- Dataset: Student Academic Success / Student Performance (hasil load: 4424 baris)
+- Task: Multiclass Classification (3 kelas)
+- Target/Label: Target -> {Dropout, Enrolled, Graduate}
+- Tools utama: Python 3.12.7, MLflow 2.19.0, scikit-learn, numpy, matplotlib
+
+2. Load Dataset & Perbaikan Delimiter
+- Kendala awal: dataset terbaca 1 kolom karena delimiter titik koma (;)
+- Solusi: load ulang dengan delimiter ';' sehingga kolom ter-split benar
+- Hasil akhir load:
+  - Shape: (4424, 37) -> 36 fitur + 1 target
+
+3. Data Understanding (EDA)
+- Data types:
+  - int64: 29 kolom
+  - float64: 7 kolom
+  - object: 1 kolom (Target)
+- Missing values: 0 (tidak ada nilai kosong pada kolom-kolom yang dicek)
+- Duplicate rows: 0
+- Distribusi label (Target):
+  - Graduate: 2209
+  - Dropout : 1421
+  - Enrolled: 794
+- Pembersihan nama kolom:
+  - df.columns = df.columns.str.strip()
+  - df.columns = df.columns.str.replace(r"\s+", " ", regex=True)
+  - Pengecekan karakter tab (\t) pada nama kolom: hasil [] (tidak ada setelah dibersihkan)
+- Korelasi contoh yang dicek:
+  - Korelasi fitur numerik terhadap “Age at enrollment” (top):
+    Age at enrollment, Marital status, Application mode, Mother's qualification, dst.
+
+4. Preprocessing (Jalur A)
+- Label encoding Target:
+  - Mapping: {'Dropout': 0, 'Enrolled': 1, 'Graduate': 2}
+- Fitur yang digunakan:
+  - Total fitur: 36 (Target dikeluarkan dari X)
+- Split data:
+  - Train: 3539 sampel
+  - Test : 885 sampel
+  - Rasio ≈ 80/20
+- Scaling:
+  - Menghasilkan X_train_scaled dan X_test_scaled (fit scaler pada train, transform pada test)
+- Output preprocessing disimpan ke folder:
+  - Membangun_model/namadataset_preprocessing/
+    - X_train.npy, X_test.npy, y_train.npy, y_test.npy
+    - feature_names.npy
+    - label_mapping.json
+
+5. Modelling Baseline (Tanpa Tuning)
+- Model: LogisticRegression
+  - max_iter = 2000
+- Tracking & logging:
+  - MLflow experiment name: Student_Academic_Success_Basic
+  - Autolog scikit-learn + log metric + artifacts
+- Hasil evaluasi pada test set:
+  - Accuracy  : 0.768361581920904  (~76.84%)
+  - F1-macro  : 0.682601247658837  (~68.26%)
+  - Classification report ringkas (berdasarkan output):
+    - Class 0 (Dropout): precision 0.79, recall 0.77, f1 0.78 (support 284)
+    - Class 1 (Enrolled): precision 0.52, recall 0.33, f1 0.41 (support 159)
+    - Class 2 (Graduate): precision 0.80, recall 0.93, f1 0.86 (support 442)
+    - accuracy 0.77 (support 885)
+- Catatan penting:
+  - Performa kelas “Enrolled” paling sulit (recall rendah), kemungkinan karena distribusi kelas lebih sedikit dibanding kelas lain.
+
+6. Modelling Tuning (Dicoba, Tidak Lebih Baik)
+- Tuning sempat dicoba (file modelling_tuning.py), namun hasilnya tidak melampaui baseline (~77%).
+- Keputusan akhir:
+  - Menggunakan model baseline (lebih stabil dan memenuhi kebutuhan kriteria).
+
+7. Artefak yang Dihasilkan
+- Artefak MLflow:
+  - confusion_matrix.png (artifact)
+  - classification_report.txt (artifact)
+  - logged model (MLflow model artifacts)
+- Bukti dashboard & artifacts:
+  - screenshoot_dashboard.jpg
+  - screenshoot_artifak.jpg
+- Catatan inference endpoint (MLflow Serve):
+  - Endpoint invocations hanya menerima POST, sehingga GET ke /invocations akan 405 (wajar)
+  - Payload yang benar untuk model ini menggunakan format:
+    {"inputs": [[... 36 fitur ...]]}
+
+8. Kesimpulan
+- Model terbaik yang dipakai: Logistic Regression (baseline)
+- Skor akhir: accuracy ~76.84% dan f1_macro ~68.26% pada test set
+- Hasil “mentok” di sekitar 77% dan tuning tidak meningkatkan performa, jadi baseline dipilih untuk final karena paling aman/stabil.
