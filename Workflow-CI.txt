@@ -1,7 +1,7 @@
 Workflow CI - Submission Sistem Monitoring & Logging
 
-Repository: MSML [https://github.com/ahmadngiliyun00/MSML]
-CI Tool: GitHub Actions [https://github.com/ahmadngiliyun00/Workflow-CI]
+Repository: SMSML_Ahmad-Ngiliyun [https://github.com/ahmadngiliyun00/SMSML_Ahmad-Ngiliyun]
+Workflow CI: GitHub Actions [https://github.com/ahmadngiliyun00/Workflow-CI_Ahmad-Ngiliyun]
 
 Tujuan:
 - Menjalankan pengecekan otomatis setiap ada push / pull request
